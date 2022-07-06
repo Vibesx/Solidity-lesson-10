@@ -26,7 +26,11 @@ export default function LotteryEntrance() {
 	// runContractFunction can both send transactions and read state
 	// the runContractFunction will also be async
 
-	const { runContractFunction: enterRaffle } = useWeb3Contract({
+	const {
+		runContractFunction: enterRaffle,
+		isLoading,
+		isFetching,
+	} = useWeb3Contract({
 		abi: abi,
 		contractAddress: raffleAddress,
 		functionName: "enterRaffle",
@@ -92,27 +96,32 @@ export default function LotteryEntrance() {
 	};
 
 	return (
-		<div>
+		<div className="p-5">
 			Hi from lottery entrance!{" "}
 			{raffleAddress ? (
 				<div>
 					<button
+						className="bg-blue-500 hover:bg-blue-700 text-white fond-bold py-2 px-4 rounded ml-auto"
 						onClick={async function () {
+							// onSuccess doesn't check if the transaction has a block confirmation, it just checks to see if the transaction was successfully sent to Metamask
+							// that's why we need to do tx.wait(1) in handleSuccess
 							await enterRaffle({
 								onSuccess: handleSuccess,
 								// it's good practice to always add onError as well
 								onError: (error) => console.log(error),
 							});
 						}}
+						disabled={isLoading || isFetching}
 					>
-						Enter Raffle
+						{isLoading || isFetching ? (
+							<div className="animate-spin spinner-border h-8 w-8 border-b-2 rounded-full"></div>
+						) : (
+							<div>Enter Raffle</div>
+						)}
 					</button>
-					<br />
-					Entrance Fee: {ethers.utils.formatUnits(entranceFee, "ether")} eth
-					<br />
-					Number of Players: {numPlayers}
-					<br />
-					Recent Winner: {recentWinner}
+					<div>Entrance Fee: {ethers.utils.formatUnits(entranceFee, "ether")} eth</div>
+					<div>Number of Players: {numPlayers}</div>
+					<div>Recent Winner: {recentWinner}</div>
 				</div>
 			) : (
 				<div>No Raffle Address Detected</div>
