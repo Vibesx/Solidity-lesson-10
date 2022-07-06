@@ -1,5 +1,10 @@
-// export default allows other applications to use this Component through import
+import { ConnectButton } from "web3uikit";
 
 export default function Header() {
-	return <div>Hi from Header! </div>;
+	return (
+		<div>
+			Decentralized Lottery
+			<ConnectButton moralisAuth={false} />
+		</div>
+	);
 }
